@@ -1,0 +1,85 @@
+* fn.py
+fn.py inspired by Clojure. Provide some useful functions
+
+** Installation
+#+begin_src bash
+pip install fnpy
+#+end_src
+
+** Manual
+*** Concurrency
+#+begin_src python
+  import time
+  from fnpy import pmap, timing
+
+  def slow_inc(x):
+      time.sleep(10)
+      return x + 1;
+
+  ### pmap demo
+  @timing
+  def go():
+      pmap(slow_inc, range(10))
+  go() # run just need 10 secs, not 100 secs
+
+
+  ### future demo
+  y = slow_inc(7) # waiting 10 secs
+  y_future = future(slow_inc, 7) # return an future object immediately
+  y_future.get() # will blocking util slow_inc return.
+
+
+  ### async demo
+  async_slow_inc = async(slow_inc) # async can use as decorator
+  y_future = async_slow_inc(7) # return an future object immediately
+
+
+  ### set_interval like js
+  set_interval(fn_no_args, start, interval=None)
+
+
+  ### memoize demo
+  mem_slow_inc = memoize(slow_inc) # memoize can use as decorator
+  mem_slow_inc(7) # need 10 secs
+  mem_slow_inc(7) # again, return immediately
+  mem_slow_inc(8) # change arguments, waiting again
+#+end_src
+
+*** Multiple Dispatch
+~defmulti~, ~defmethod~. Details see [[http://gfzeng.github.io/#!/posts/clojure-defmulti-in-python.org][this blog]]
+
+*** pre, post, timing, once
+~pre~ check the validity of arguments of function, 
+~post~ check the validity of return value of function
+
+#+begin_src python
+  @pre(lambda n: n >= 0)
+  @post(lambda ret: ret >= 0)
+  def fib(n):
+      if n <= 1:
+          return n
+      return fib(n - 1) + fib(n - 2)
+
+  fib(-1) ## will throw assertion error
+#+end_src
+
+~timing~ use for profiling. function will print elasped time if decorated by ~timing~
+
+~once~ is simple. 2 advantages:
+1. instead of global
+2. init global variable at first use time, test convenient.(such as DB connection variable)
+   
+#+begin_src python
+  from redis import Redis
+  from fnpy import once
+
+  @once
+  def redis_conn():
+      print "Init redis connection" # print only first time
+      return Redis()
+
+  def get_from_cache(key):
+      redis_conn().get(key)
+      redis_conn().touch(key)
+
+#+end_src
