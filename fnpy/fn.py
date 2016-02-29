@@ -360,15 +360,15 @@ def once(f):
         return mem[1]
     return onced
 
-def lock(f):
-    l = threading.Lock()
-    def locked(*args, **kwargs):
-        l.acquire()
-        try:
-            return f(*args, **kwargs)
-        finally:
-            l.release()
-    return locked
+def lock(l):
+    if hasattr(l, "__call__"):
+        return lock(threading.Lock())(l)
+    def wrap_lock(f):
+        def locked(*args, **kwargs):
+            with l:
+                return f(*args, **kwargs)
+        return locked
+    return wrap_lock
 
 def singleton(cls, *args, **kw):
     instances = {}
