@@ -100,6 +100,10 @@ def p_map(f, *seqs, **kwargs):
             #raise Exception("no more elements", "idiot!!!")
         #def has_next(self): return self.capacity > 0
         def __iter__(self): return self
+        def doall(self): return list(self)
+        def dorun(self):
+            for i in self:
+                pass
     return ResultSet(q, len(argvs))
 
 def _exec(f, argv):
@@ -231,6 +235,24 @@ def frequencies(coll):
         coll,
         {}
     )
+
+def comp(*fs):
+    if not fs:
+        return identity
+    rfs = fs[-2::-1]
+    def _comp(*args, **kw):
+        ret = fs[-1](*args, **kw)
+        for f in rfs:
+            ret = f(ret)
+        return ret
+
+    return _comp
+
+def not_empty(xs):
+    if not xs:
+        return
+    return xs
+
 ############################# util fn END ########################
 
 
