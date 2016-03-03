@@ -39,8 +39,8 @@ def deref(f, timeout_ms=None, timeout_val=None):
 #deref = future.deref
 
 
-def pmap(f, *seqs):
-    return map(deref, map(lambda args: future(f, *args), zip(*seqs)))
+#def pmap(f, *seqs):
+#    return map(deref, map(lambda args: future(f, *args), zip(*seqs)))
 
 def pcall(fs):
     return map(deref, [future(f) for f in fs])
@@ -78,9 +78,10 @@ def set_interval(fn, start, interval=None):
     return t
 
 ### p_map is not thread safe
-def p_map(f, *seqs, **kwargs):
-    q = Queue.Queue(kwargs.get('pool_size', 30))
+def pmap(f, *seqs, **kwargs):
     argvs = zip(*seqs)
+    argvs_len = len(argvs)
+    q = Queue.Queue(min(argvs_len, kwargs.get('pool_size', 32)))
     #argvs = seqs
     def worker():
         for argv in argvs:
@@ -104,7 +105,7 @@ def p_map(f, *seqs, **kwargs):
         def dorun(self):
             for i in self:
                 pass
-    return ResultSet(q, len(argvs))
+    return ResultSet(q, argvs_len)
 
 def _exec(f, argv):
     def worker(cf, argv):
@@ -379,6 +380,12 @@ def singleton(cls, *args, **kw):
         return instances[cls]
 
     return _singleton
+
+class classproperty(object):
+    def __init__(self, f):
+        self.f = f
+    def __get__(self, obj, owner):
+        return self.f(owner)
 
 def parse_command_line(args):
     return {args[i].replace("--", ""): args[i+1] for i in range (0, len(args), 2)}
