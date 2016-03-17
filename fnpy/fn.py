@@ -226,6 +226,14 @@ def identity(x): return x;
 def  inc(x): return x + 1
 def  dec(x): return x - 1
 
+def dorun(xs):
+    for x in xs:
+        pass
+
+def doall(xs):
+    return [x for x in xs]
+
+
 def assoc(coll, k, v):
     coll[k] = v
     return coll
@@ -356,6 +364,11 @@ def once(f):
     def onced(*args, **kwargs):
         if mem[0]:
             return mem[1]
+        mem[1] = f(*args, **kwargs)
+        mem[0] = True
+        return mem[1]
+    @inject_to(onced)
+    def re_assign(*args, **kwargs):
         mem[1] = f(*args, **kwargs)
         mem[0] = True
         return mem[1]
