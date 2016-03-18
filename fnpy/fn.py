@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #######################################################
-# @Autor:        Isaac.Zeng ~~~ gaofeng.zeng@togic.com
+# @Autor:        Isaac.Zeng ~~~ zenggf@ufish.io
 # @Setup Time:   Saturday, 30 November 2013.
 # @Updated Time: 2014-01-15 15:17:07
 # @Description:
@@ -11,6 +11,7 @@
 
 import threading, Queue, time
 from multiprocessing import Process, Pipe
+from contextlib import contextmanager
 
 ####################### Concurrence ###################
 class future(threading.Thread):
@@ -399,6 +400,41 @@ class classproperty(object):
         self.f = f
     def __get__(self, obj, owner):
         return self.f(owner)
+
+class Pool(Queue.Queue):
+    def __init__(self, ctor, pool_size):
+        Queue.Queue.__init__(self, pool_size)
+        self.ctor = ctor
+        self.pool_size = pool_size
+
+    @lock
+    def new_value(self):
+        if self.pool_size > 0:
+            self.pool_size -= 1
+            return self.ctor()
+
+    @contextmanager
+    def __call__(self):
+        val = None
+        if self.pool_size > 0 and self.empty():
+            val = self.new_value()
+        else:
+            val = self.get()
+
+        try:
+            yield val
+        finally:
+            self.put(val)
+
+def pool(pool_size):
+    """
+    Decorator
+    """
+    def pooled(f):
+        return Pool(f, pool_size=pool_size)
+    return pooled
+
+
 
 def parse_command_line(args):
     return {args[i].replace("--", ""): args[i+1] for i in range (0, len(args), 2)}
