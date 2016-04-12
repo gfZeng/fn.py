@@ -12,6 +12,7 @@
 import threading, Queue, time
 from multiprocessing import Process, Pipe
 from contextlib import contextmanager
+import hashlib
 
 ####################### Concurrence ###################
 class future(threading.Thread):
@@ -223,6 +224,10 @@ def first(l): return l[0]
 def second(l): return l[1]
 def last(l): return l[-1]
 def identity(x): return x;
+
+
+def md5(s):
+    return hashlib.md5(s).hexdigest()
 
 def currentTimeMillis():
     return int(time.time() * 1000)
