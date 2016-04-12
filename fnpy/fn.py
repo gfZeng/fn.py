@@ -224,6 +224,25 @@ def second(l): return l[1]
 def last(l): return l[-1]
 def identity(x): return x;
 
+def currentTimeMillis():
+    return int(time.time() * 1000)
+
+def take(n, xs):
+    i = 0
+    for x in xs:
+        if i >= n:
+            break
+        i += 1
+        yield x
+
+def drop(n, xs):
+    i = 0
+    for x in xs:
+        if i < n:
+            i += 1
+            continue
+        yield x
+
 def  inc(x): return x + 1
 def  dec(x): return x - 1
 
