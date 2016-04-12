@@ -458,7 +458,14 @@ def pool(pool_size):
         return Pool(f, pool_size=pool_size)
     return pooled
 
+def pr_str(x):
+    return repr(x).decode("unicode-escape")
 
+def prn(*args):
+    print " ".join(map(pr_str, args))
+
+def pr(*args):
+    print " ".join(map(pr_str, args)),
 
 def parse_command_line(args):
     return {args[i].replace("--", ""): args[i+1] for i in range (0, len(args), 2)}
