@@ -445,6 +445,9 @@ class Pool(Queue.Queue):
         else:
             val = self.get()
 
+        if not val:
+            val = self.get()
+
         try:
             yield val
         finally:
