@@ -9,10 +9,18 @@
 #######################################################
 
 
-import threading, Queue, time
+from __future__ import print_function
+import threading, time
 from multiprocessing import Process, Pipe
 from contextlib import contextmanager
 import hashlib
+
+try:
+    # python 2
+    import Queue
+except:
+    # python 3
+    import queue as Queue
 
 ####################### Concurrence ###################
 class future(threading.Thread):
@@ -167,7 +175,7 @@ class Atom(object):
             try:
                 w(k, self, ov, nv)
             except e:
-                print e
+                print(e)
 
     def reset(self, nv):
         ov = self.v
@@ -313,7 +321,7 @@ def timing(f):
         try:
             return f(*args, **kwargs)
         finally:
-            print "Elapsed time:", 1000 * (time.time() - t), "msecs"
+            print("Elapsed time:", 1000 * (time.time() - t), "msecs")
     return wrapper
 ########################### test util END #####################
 
@@ -481,10 +489,10 @@ def pr_str(x):
     return repr(x).decode("unicode-escape")
 
 def prn(*args):
-    print " ".join(map(pr_str, args))
+    print(" ".join(map(pr_str, args)))
 
 def pr(*args):
-    print " ".join(map(pr_str, args)),
+    print(" ".join(map(pr_str, args)), end="")
 
 def parse_command_line(args):
     return {args[i].replace("--", ""): args[i+1] for i in range (0, len(args), 2)}
