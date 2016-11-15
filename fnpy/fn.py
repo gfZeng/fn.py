@@ -225,6 +225,22 @@ def second(l): return l[1]
 def last(l): return l[-1]
 def identity(x): return x;
 
+def partial(f, *args, **kwargs):
+    def partialed(*pargs, **pkwargs):
+        _args = args + pargs
+        kwargs.update(pkwargs)
+        return f(*_args, **kwargs)
+    partialed.__name__ == f.__name__
+    return partialed
+
+def rpartial(f, *args, **kwargs):
+    def partialed(*pargs, **pkwargs):
+        _args = pargs + args
+        pkwargs.update(kwargs)
+        return f(*_args, **pkwargs)
+    partialed.__name__ == f.__name__
+    return partialed
+
 
 def md5(s):
     return hashlib.md5(s).hexdigest()
