@@ -1,4 +1,4 @@
-__version__ = "0.2.9"
+__version__ = "0.3.0"
 
-from fn import *
-from fn import _
+from .fn import *
+from .fn import _
