@@ -89,7 +89,7 @@ def set_interval(fn, start, interval=None):
 
 ### p_map is not thread safe
 def pmap(f, *seqs, **kwargs):
-    argvs = zip(*seqs)
+    argvs = list(zip(*seqs))
     argvs_len = len(argvs)
     q = Queue.Queue(min(argvs_len, kwargs.get('pool_size', 32)))
     #argvs = seqs
@@ -134,7 +134,7 @@ def ppmap(f, *seqs):
 
 def pp_map(f, *seqs, **kwargs):
     q = Queue.Queue(kwargs.get('pool_size', 4))
-    argvs = zip(*seqs)
+    argvs = list(zip(*seqs))
     def run():
         for argv in argvs:
             q.put(_exec(f, argv))
