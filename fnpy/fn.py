@@ -57,7 +57,7 @@ def pcall(fs):
 
 def inject_to(o):
     def inject(fn):
-        setattr(o, fn.func_name, fn)
+        setattr(o, fn.__name__, fn)
         #o.__setattr__(fn.func_name, fn)
     return inject
 
@@ -110,6 +110,7 @@ def pmap(f, *seqs, **kwargs):
             raise StopIteration
             #raise Exception("no more elements", "idiot!!!")
         #def has_next(self): return self.capacity > 0
+        def __next__(self): return self.next()
         def __iter__(self): return self
         def doall(self): return list(self)
         def dorun(self):
